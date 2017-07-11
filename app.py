@@ -52,19 +52,7 @@ def webhook():
 
     return "ok", 200
                         special_keywords = {
-                            "axa": send_image,
-                            "make me laugh": send_gif,
-                            "sumit": send_call,
-                            "shaique": send_call,
-                            "aman": send_call,
-                            "youtube": send_button,
-                            "enjoy": send_generic,
-                            "amit": send_call,
-                            "quick reply": send_quick_reply,
-                            "amrendra": send_call,
-                            #"peace": send_gif,
-                            #"typing off": send_typing_off,
-                            #"account linking": send_account_linking
+                            "axa"
                         }
 
                         if message_text in special_keywords:
