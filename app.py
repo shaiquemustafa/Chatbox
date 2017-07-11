@@ -50,18 +50,7 @@ def webhook():
                 if messaging_event.get("postback"):  # user clicked/tapped "postback" button in earlier message
                     pass
 
-    return "ok", 200
-                        special_keywords = {
-                            "axa"
-                        }
-
-                        if message_text in special_keywords:
-                            special_keywords[message_text](sender_id) # activate the function
-                            send_message(sender_id, "Yayyy!")
-                            return "ok", 200
-                        else:
-                            send_message(sender_id, "Sumit said thanks for messaging!")
-                            send_quick_reply(sender_id)
+     return "ok", 200
 
 
 def send_message(recipient_id, message_text):
