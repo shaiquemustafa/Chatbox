@@ -1,2 +1,203 @@
-*.pyc
-.*
+# -*- coding: utf-8 -*-
+"""
+Created on Tue Jul 18 11:47:13 2017
+
+@author: shaique mustafa
+"""
+
+import pandas as pd
+t = pd.read_csv("C:\\Users\\shaique mustafa\\Desktop\\python\\quality.csv")
+
+#print(t.head(10))
+
+#looking at the target variable
+p = t['PoorCare']
+
+import math
+import numpy as np
+import pandas as pd
+from pandas import DataFrame
+from sklearn.linear_model import LogisticRegression
+from sklearn.cross_validation import train_test_split
+import statsmodels.api as sm
+from sklearn.grid_search import GridSearchCV
+from sklearn.metrics import classification_report
+
+
+
+
+#print(t.ix[10:12])
+
+#using [:, for cloumns and ]
+X = t.ix[:,1:12]
+X.drop(['DaysSinceLastERVisit', 'Pain','TotalVisits'], axis=1)
+       
+
+
+Y = t['PoorCare']
+
+
+
+X_train,X_test,Y_train,Y_test = train_test_split(X,Y,test_size=0.33)
+#using grid search 
+param_grid = {'C': [0.01, 0.1, 1, 10, 100, 1000],'max_iter': [50,100,150,200],'penalty':['l1','l2']}
+clfg = GridSearchCV(LogisticRegression(penalty='l1'), param_grid) 
+clfg.fit(X_train, Y_train)
+print ('score of grid search ', clfg.score(X_test,Y_test))
+print(clfg.best_estimator_)
+
+
+
+clf = LogisticRegression(C = 0.01)
+clf.fit(X_train,Y_train)
+
+print ('score Scikit learn: ', clf.score(X_test,Y_test))
+
+ypred_train = clf.predict(X_train)
+
+h = pd.DataFrame(ypred_test_score)
+
+ypred_test = clf.predict(X_test)#checking the classification accuracy
+print(ypred_train)
+from sklearn.metrics import confusion_matrix
+print(confusion_matrix(Y_test,ypred_test))
+
+print(clf.coef_)
+
+ypred_test_score = clf.predict_proba(X_test)
+                                #checking the classification accuracy
+                           
+#print(ypred_test_score)
+print(ypred_test)
+
+from sklearn.metrics import roc_curve, auc
+fpr, tpr, thresholds =roc_curve(Y_test, ypred_test)
+
+roc_auc = auc(fpr, tpr)
+
+print("Area under the ROC curve : %f" % roc_auc)
+# The optimal cut off would be where tpr is high and fpr is low
+# tpr - (1-fpr) is zero or near to zero is the optimal cut off point
+'''
+#def Find_Optimal_Cutoff(target, predicted):
+    
+    #fpr, tpr, threshold = roc_curve(target, predicted)
+    #i = np.arange(len(tpr)) 
+    #roc = pd.DataFrame({'tf' : pd.Series(tpr-fpr), index=i), 'threshold':pd.Series(threshold, index=i)})
+    #roc_t = roc.ix[(roc.tf-0).abs().argsort()[:1]]
+    #return list(roc_t['threshold'])
+     
+
+
+#threshold = Find_Optimal_Cutoff(Y_test, ypred_test_score)
+#print(threshold)
+'''
+#the basic logistic ends here
+
+import numpy as np
+from sklearn.tree import DecisionTreeClassifier
+from sklearn.datasets import make_classification
+from sklearn.cross_validation import train_test_split
+from sklearn import tree
+
+from sklearn.cross_validation import cross_val_score
+k_range = list(range(1, 31))
+k_scores = []
+for k in k_range:
+    lf = tree.DecisionTreeClassifier(max_depth=k)
+    scores = cross_val_score(lf, X, Y, cv=10, scoring='accuracy')
+    k_scores.append(scores.mean())
+print(k_scores)
+
+import matplotlib.pyplot as plt
+
+plt.plot(k_range, k_scores)
+plt.xlabel('Value of K for tree')
+plt.ylabel('Cross-Validated Accuracy')
+
+lf = tree.DecisionTreeClassifier(max_depth=1)
+lf.fit(X_train, Y_train)
+
+ypred_tree_score = lf.predict_proba(X_test)
+print(ypred_tree_score)
+ypred_test = lf.predict(X_test)
+X_train.to_csv('rr.csv')
+print ('score of tree ', lf.score(X_test,Y_test))
+from sklearn.metrics import confusion_matrix
+print(confusion_matrix(Y_test,ypred_test))
+
+
+#y = ypred_tree_score(map(lambda x:0 , if x> 0.7 :1))
+ #startin ensemble 
+from sklearn import cross_validation
+from sklearn.linear_model import LogisticRegression
+from sklearn.naive_bayes import GaussianNB
+from sklearn.ensemble import RandomForestClassifier
+import numpy as np
+
+
+#comparing different models 
+
+for clff, label in zip([clf,lf], ['Logistic Regression', 'trees' ]):
+    scores = cross_validation.cross_val_score(clff, X, Y, cv=9, scoring='accuracy')
+    print("Accuracy: %0.2f (+/- %0.2f) [%s]" % (scores.mean(), scores.std(), label))
+
+ 
+ 
+        
+        
+import pandas
+from sklearn import model_selection
+from sklearn.linear_model import LogisticRegression
+from sklearn.tree import DecisionTreeClassifier
+from sklearn.svm import SVC
+from sklearn import metrics
+from sklearn.ensemble import VotingClassifier
+from sklearn.cross_validation import KFold
+
+seed = 5
+
+#kf = model_selection.KFold(n_splits=10, random_state=seed) 
+
+estimators = []
+estimators.append(('logistic', clf))
+
+estimators.append(('cart', lf))
+kfold = model_selection.KFold(n_splits=5, random_state=seed)
+# create the ensemble model
+ensemble = VotingClassifier(estimators)
+results = model_selection.cross_val_score(ensemble, X, Y, cv = kfold )
+#see all the scores of cross validation
+print(results)
+print("the ensemble model gives :%f " %results.mean())
+
+
+
+
+ensemble.fit(X_train,Y_train)
+h =ensemble.predict(X_test)
+print(h)
+
+print ('score of ensemble: ', ensemble.score(X_test,Y_test))
+
+print (metrics.accuracy_score(h,Y_test)) 
+
+from sklearn.ensemble import GradientBoosting 
+
+
+
+
+
+print
+
+
+
+
+
+
+
+
+
+
+
+
