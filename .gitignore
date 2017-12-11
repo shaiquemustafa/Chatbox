@@ -188,7 +188,92 @@ from sklearn.ensemble import GradientBoosting
 
 
 
-print
+USing RNADOM FOREST 
+
+
+
+# -*- coding: utf-8 -*-
+"""
+Created on Fri Dec 08 17:12:21 2017
+
+@author: shaique mustafa
+"""
+
+import numpy as np
+from sklearn.tree import DecisionTreeClassifier
+from sklearn.datasets import make_classification
+from sklearn.cross_validation import train_test_split
+from sklearn import tree
+import pandas as pd
+from sklearn.ensemble import RandomForestClassifier
+t = pd.read_csv("C:\\Users\\shaique mustafa\\Desktop\\python\\train.csv")
+X = t.ix[:,1:35]
+#X.drop(['DaysSinceLastERVisit', 'Pain','TotalVisits'], axis=1)
+       
+
+
+Y = t['Cover_Type']
+
+
+
+X_train,X_test,Y_train,Y_test = train_test_split(X,Y,test_size=0.33)
+
+from sklearn.cross_validation import cross_val_score
+k_range = list(range(1, 31))
+k_scores = []
+for k in k_range:
+    lf = tree.DecisionTreeClassifier(max_depth=k)
+    scores = cross_val_score(lf, X, Y, cv=10, scoring='accuracy')
+    k_scores.append(scores.mean())
+print(k_scores)
+
+import matplotlib.pyplot as plt
+
+plt.plot(k_range, k_scores)
+plt.xlabel('Value of K for tree')
+plt.ylabel('Cross-Validated Accuracy')
+
+lf =RandomForestClassifier(max_depth=3,max_features=5,n_estimators=100)
+lf.fit(X_train, Y_train)
+
+ypred_tree_score = lf.predict_proba(X_test)
+print(ypred_tree_score)
+ypred_test = lf.predict(X_test)
+#X_train.to_csv('rr.csv')
+print ('score of tree ', lf.score(X_test,Y_test))
+from sklearn.metrics import confusion_matrix
+print(confusion_matrix(Y_test,ypred_test))
+from sklearn.metrics import roc_curve, auc
+fpr, tpr, thresholds =roc_curve(Y_test, ypred_test)
+
+roc_auc = auc(fpr,tpr)
+print("Area under the ROC curve : %f" % roc_auc)
+print(lf.feature_importances_)
+def Find_Optimal_Cutoff(target, predicted):
+  
+    fpr, tpr, threshold = roc_curve(target, predicted)
+    i = np.arange(len(tpr)) 
+    roc = pd.DataFrame({'tf' : pd.Series(tpr-(1-fpr), index=i), 'threshold' : pd.Series(threshold, index=i)})
+    roc_t = roc.ix[(roc.tf-0).abs().argsort()[:1]]
+
+    return list(roc_t['threshold']) 
+
+
+# Add prediction probability to dataframe
+#data['pred_proba'] = result.predict(data[train_cols])
+
+# Find optimal probability threshold
+threshold = Find_Optimal_Cutoff(Y_test, ypred_tree_score[:,0])
+print threshold
+# [0.31762762459360921]
+
+# Find prediction to the dataframe applying threshold
+new = c[0].map(lambda x: 1 if x > 0.4865547356064992 else 0)
+
+# Print confusion Matrix
+from sklearn.metrics import confusion_matrix
+confusion_matrix(Y_test, new)	
+
 
 
 
